@@ -1,25 +1,5 @@
 apply plugin: 'com.android.library'
 
-buildscript {
-    repositories {
-        google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }
-        mavenCentral()
-        gradlePluginPortal()
-        maven { url 'https://developer.huawei.com/repo/' } //华为 push
-        //mavenCentral仓和jcenter仓的聚合仓 阿里云镜像(老)
-        maven { url 'https://maven.aliyun.com/nexus/content/groups/public' }
-    }
-    dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
-    }
-}
-
 android {
     compileSdk 34
     defaultConfig {
@@ -39,7 +19,5 @@ android {
 ext {
     PUBLISH_ARTIFACT_ID = "compress"
 }
-
-apply from: '../publish.gradle'
 
 dependencies {}

@@ -36,6 +36,7 @@ public class BaseRecyclerMediaHolder extends RecyclerView.ViewHolder {
     public ImageView ivPicture;
     public TextView tvCheck;
     public View btnCheck;
+    public View viewSelectBorder;
     public Context mContext;
     public SelectorConfig selectorConfig;
     public boolean isSelectNumberStyle;
@@ -72,6 +73,7 @@ public class BaseRecyclerMediaHolder extends RecyclerView.ViewHolder {
         ivPicture = itemView.findViewById(R.id.ivPicture);
         tvCheck = itemView.findViewById(R.id.tvCheck);
         btnCheck = itemView.findViewById(R.id.btnCheck);
+        viewSelectBorder = itemView.findViewById(R.id.viewSelectBorder);
         if (config.selectionMode == SelectModeConfig.SINGLE && config.isDirectReturnSingle) {
             tvCheck.setVisibility(View.GONE);
             btnCheck.setVisibility(View.GONE);
@@ -134,9 +136,7 @@ public class BaseRecyclerMediaHolder extends RecyclerView.ViewHolder {
             notifySelectNumberStyle(media);
         }
 
-        if (isHandleMask && selectorConfig.isMaxSelectEnabledMask) {
-            dispatchHandleMask(media);
-        }
+        media.setMaxSelectEnabledMask(false);
 
         String path = media.getPath();
         if (media.isEditorImage()) {
@@ -277,11 +277,10 @@ public class BaseRecyclerMediaHolder extends RecyclerView.ViewHolder {
         if (tvCheck.isSelected() != isChecked) {
             tvCheck.setSelected(isChecked);
         }
-        if (selectorConfig.isDirectReturnSingle) {
-            ivPicture.setColorFilter(defaultColorFilter);
-        } else {
-            ivPicture.setColorFilter(isChecked ? selectColorFilter : defaultColorFilter);
+        if (viewSelectBorder != null) {
+            viewSelectBorder.setVisibility(isChecked ? View.VISIBLE : View.GONE);
         }
+        ivPicture.clearColorFilter();
     }
 
     /**

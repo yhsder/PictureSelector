@@ -30,9 +30,6 @@ android {
 ext {
     PUBLISH_ARTIFACT_ID = "pictureselector"
 }
-
-apply from: '../publish.gradle'
-
 dependencies {
     implementation "androidx.appcompat:appcompat:${cfgs.version_appcompat}"
     implementation "androidx.recyclerview:recyclerview:${cfgs.version_recyclerview}"

@@ -45,3 +45,60 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+def resolveBuildValue = { List<String> keys, String defaultValue ->
+    for (String key : keys) {
+        def projectValue = rootProject.findProperty(key)
+        if (projectValue != null && projectValue.toString().trim()) {
+            return projectValue.toString()
+        }
+
+        def envValue = System.getenv(key)
+        if (envValue != null && envValue.trim()) {
+            return envValue
+        }
+    }
+    return defaultValue
+}
+
+def resolvedJitpackGroupId = resolveBuildValue(["JITPACK_GROUP", "GROUP"], "com.github.yhsder")
+def resolvedJitpackVersion = resolveBuildValue(
+        ["JITPACK_VERSION", "VERSION", "VERSION_NAME"],
+        cfgs.versionName.toString().replaceFirst("^v", "")
+)
+
+subprojects { subproject ->
+    subproject.plugins.withId("com.android.library") {
+        subproject.apply plugin: "maven-publish"
+
+        def androidExtension = subproject.extensions.findByName("android")
+        if (androidExtension != null) {
+            androidExtension.publishing {
+                singleVariant("release") {
+                    withSourcesJar()
+                }
+            }
+        }
+
+        subproject.afterEvaluate {
+            def releaseComponent = subproject.components.findByName("release")
+            if (releaseComponent == null) {
+                logger.lifecycle("Skip ${subproject.path} publishing: missing release component")
+                return
+            }
+
+            subproject.publishing {
+                publications {
+                    if (findByName("release") == null) {
+                        release(MavenPublication) {
+                            from releaseComponent
+                            groupId = resolvedJitpackGroupId
+                            artifactId = (subproject.findProperty("PUBLISH_ARTIFACT_ID") ?: subproject.name).toString()
+                            version = resolvedJitpackVersion
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
